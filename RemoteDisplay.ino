@@ -1,3 +1,5 @@
+//Version 2.6 -- 04/12/2018
+//2.6 - Added SQL to remote display
 #include <TFT_ST7735.h> // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
 #include <wire.h>
@@ -10,6 +12,7 @@ bool debug=1;
 bool firstRun = 0;
 bool btnClicked = 0;
 bool gotFromEeprom = 0;
+bool sql = 0;
 char Cal[7];
 byte menuItem = 0;
 
@@ -148,7 +151,7 @@ void receiveEvent() {
 		i++;
 	}
 	receivedString[i]=0;
-	if (i<30)
+	if (i<32)
 		processData();
 }
 
@@ -237,8 +240,26 @@ void processData(){
 		tft.print(F("M"));
 		tft.print(F("   "));
 
-		memcpy(Cal, &receivedString[23],sizeof(receivedString)-23);
-		Cal[sizeof(receivedString)-22] = 0;
+		if (receivedString[23]=='#'){
+			sql = (receivedString[24]==0);
+			if (sql==1){
+				tft.setTextColor(TFT_RED,TFT_BLACK);
+			}
+			else
+			{
+				tft.setTextColor(TFT_GREEN,TFT_BLACK);
+			}
+			tft.setCursor(140, 52, 1);
+			tft.print(F("SQL"));
+			memcpy(Cal, &receivedString[25],sizeof(receivedString)-25);
+			Cal[sizeof(receivedString)-24] = 0;
+		}
+		else
+		{
+			memcpy(Cal, &receivedString[23],sizeof(receivedString)-23);
+			Cal[sizeof(receivedString)-22] = 0;
+		}
+
 		tft.setCursor(3, 90, 1);
 		tft.setTextColor(TFT_RED,TFT_BLACK);
 		tft.print(F("CAL:"));
