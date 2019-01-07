@@ -6,6 +6,8 @@
 #include <EEPROM.h>
 
 #define 	TFT_GREY 	0x5AEB // New colour
+//#define SQLLED A2
+//#define TXLED A3
 
 char receivedString[32];
 bool debug=1;
@@ -86,6 +88,11 @@ void setup(void) {
 	pinMode(2, INPUT_PULLUP);
 	pinMode(3, INPUT_PULLUP);
 	pinMode(4, INPUT_PULLUP);
+//	pinMode(TXLED, OUTPUT);
+//	pinMode(SQLLED, OUTPUT);
+//	digitalWrite(TXLED,0);
+//	digitalWrite(SQLLED,0);
+
 	tft.init();
 	tft.setRotation(1);
 
@@ -242,6 +249,7 @@ void processData(){
 
 		if (receivedString[23]=='#'){
 			sql = (receivedString[24]==0);
+//			digitalWrite(SQLLED,sql);
 			if (sql==1){
 				tft.setTextColor(TFT_RED,TFT_BLACK);
 			}
@@ -249,6 +257,7 @@ void processData(){
 			{
 				tft.setTextColor(TFT_GREEN,TFT_BLACK);
 			}
+
 			tft.setCursor(140, 52, 1);
 			tft.print(F("SQL"));
 			memcpy(Cal, &receivedString[25],sizeof(receivedString)-25);
@@ -298,6 +307,7 @@ void printFreqInfo() {
 	tft.print(buff);
 
 	tft.setCursor(3, 20, 4);
+//	digitalWrite(TXLED,receivedString[16]>1);
 	if (receivedString[16] == 1) {			//1=RX, 2=TX, 3=Beacon
 		frq = 40000 + (rxChannel * 125); 	//RX -> RX Freq
 		frq=(frq/10)+140000;
